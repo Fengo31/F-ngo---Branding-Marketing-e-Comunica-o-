@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <title>Féngo | Marketing e Comunicação</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f5f9;
+      color: #172033;
+    }
+    header {
+      background: #101827;
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 8px; color: #f5b942; }
+    header p { margin: 0; }
+    main { max-width: 850px; margin: auto; padding: 20px; }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 14px #15213b12;
+    }
+    label { display: block; font-weight: bold; margin: 14px 0 7px; }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccd2dd;
+      border-radius: 8px;
+      font: inherit;
+      background: white;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    button {
+      background: #101827;
+      color: white;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 8px 5px 0 0;
+    }
+    button.secondary { background: #e9edf5; color: #172033; }
+    .gold { color: #b77d0b; }
+    #resultado {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: #f3f5f9;
+      padding: 15px;
+      border-radius: 8px;
+      min-height: 70px;
+    }
+    footer { text-align: center; padding: 22px; color: #697386; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>FÉNGO</h1>
+    <p>Branding, Marketing e Comunicação</p>
+    <p>O teu centro de criação de conteúdos</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Gerador de publicações</h2>
+      <p>Prepara ideias de conteúdo para divulgar os teus serviços gráficos.</p>
+
+      <label for="servico">Serviço a promover</label>
+      <select id="servico">
+        <option>Design gráfico e logotipos</option>
+        <option>Cartões de visita</option>
+        <option>Flyers e cartazes</option>
+        <option>Banners e lonas publicitárias</option>
+        <option>Identidade visual para empresas</option>
+        <option>Impressão e personalização</option>
+        <option>Gestão de redes sociais</option>
+      </select>
+
+      <label for="publico">Público-alvo</label>
+      <input id="publico" placeholder="Ex.: restaurantes, clínicas, empresas">
+
+      <label for="oferta">Oferta ou contacto a divulgar</label>
+      <input id="oferta" placeholder="Ex.: peça já o seu orçamento">
+
+      <label for="tom">Estilo da publicação</label>
+      <select id="tom">
+        <option>Profissional e persuasivo</option>
+        <option>Moderno e criativo</option>
+        <option>Promocional e directo</option>
+        <option>Educativo</option>
+      </select>
+
+      <button onclick="gerar()">Gerar publicação</button>
+      <button class="secondary" onclick="limpar()">Limpar</button>
+    </section>
+
+    <section class="card">
+      <h2>Conteúdo criado</h2>
+      <div id="resultado">A tua publicação aparecerá aqui.</div>
+      <button onclick="copiar()">Copiar texto</button>
+      <button class="secondary" onclick="partilhar()">Partilhar</button>
+      <p id="aviso" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <h2>Próximas funcionalidades</h2>
+      <p>✓ Criação de textos promocionais.</p>
+      <p>✓ Preparação de conteúdos para redes sociais.</p>
+      <p>○ Integração oficial com Facebook e Instagram.</p>
+      <p>○ Planeamento e agendamento de publicações.</p>
+      <p>○ Biblioteca de campanhas e acompanhamento de resultados.</p>
+      <p class="gold"><strong>Nota:</strong> a publicação automática exigirá configurações e autorizações adicionais.</p>
+    </section>
+  </main>
+
+  <footer>© Féngo — Branding, Marketing e Comunicação</footer>
+
+  <script>
+    function gerar() {
+      const servico = document.getElementById('servico').value;
+      const publico = document.getElementById('publico').value.trim() || 'clientes e empresas';
+      const oferta = document.getElementById('oferta').value.trim() || 'Contacte-nos para solicitar um orçamento';
+      const tom = document.getElementById('tom').value;
+
+      const aberturas = {
+        'Profissional e persuasivo': 'Destaque a sua marca com uma apresentação profissional!',
+        'Moderno e criativo': 'A sua marca merece destacar-se e ser lembrada!',
+        'Promocional e directo': 'Está na hora de dar mais visibilidade ao seu negócio!',
+        'Educativo': 'Uma comunicação visual consistente ajuda o público a reconhecer a sua marca!'
+      };
+
+      const texto = aberturas[tom] + '\n\n' +
+        'A Féngo apresenta soluções de ' + servico.toLowerCase() +
+        ', pensadas para ' + publico + '.\n\n' +
+        oferta + '.\n\n' +
+        'FÉNGO — Branding, Marketing e Comunicação\n\n' +
+        '#Fengo #DesignGrafico #Marketing #ComunicacaoVisual';
+
+      document.getElementById('resultado').textContent = texto;
+      document.getElementById('aviso').textContent = 'Publicação preparada. Revê os dados antes de divulgar.';
+    }
+
+    function limpar() {
+      document.getElementById('publico').value = '';
+      document.getElementById('oferta').value = '';
+      document.getElementById('resultado').textContent = 'A tua publicação aparecerá aqui.';
+      document.getElementById('aviso').textContent = '';
+    }
+
+    async function copiar() {
+      const texto = document.getElementById('resultado').textContent;
+      try {
+        await navigator.clipboard.writeText(texto);
+        document.getElementById('aviso').textContent = 'Texto copiado!';
+      } catch (e) {
+        document.getElementById('aviso').textContent = 'Selecciona o texto e copia-o manualmente.';
+      }
+    }
+
+    async function partilhar() {
+      const texto = document.getElementById('resultado').textContent;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'Féngo', text: texto });
+        } catch (e) {}
+      } else {
+        document.getElementById('aviso').textContent = 'Usa o botão Copiar texto para partilhar nas tuas redes.';
+      }
+    }
+  </script>
+</body>
+</html>
