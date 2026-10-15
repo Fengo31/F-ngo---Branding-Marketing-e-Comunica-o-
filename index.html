@@ -159,63 +159,44 @@ gerarPostGrafico();
 function gerarPostGrafico(){
 const canvas=document.getElementById('postCanvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
 const titulo=document.getElementById('graficoTitulo').value.trim()||'A tua marca merece destacar-se!';
-const mensagem=document.getElementById('graficoMensagem').value.trim()||'Design gráfico e comunicação visual para o teu negócio.';
+const mensagem=document.getElementById('graficoMensagem').value.trim()||'Design gráfico e comunicação visual para dar mais destaque ao teu negócio.';
 const contacto=document.getElementById('graficoContacto').value.trim();
 const cor=document.getElementById('graficoCor').value;
 const estilo=document.getElementById('graficoEstilo')?.value||'premium';
 const ouro='#f5b942',branco='#ffffff',escuro='#101827';
 function arredondado(x,y,w,h,r,fill){ctx.fillStyle=fill;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else{ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);}ctx.fill();}
-function wrap(text,maxWidth,font){ctx.font=font;const words=text.split(/\s+/),lines=[];let line='';for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else{line=test;}}if(line)lines.push(line);return lines;}
-function textoLinhas(text,x,y,maxWidth,font,color,lineHeight,maxLines){ctx.font=font;ctx.fillStyle=color;const lines=wrap(text,maxWidth,font).slice(0,maxLines);lines.forEach(line=>{ctx.fillText(line,x,y);y+=lineHeight;});return y;}
+function linhas(text,maxWidth,font,maxLines){ctx.font=font;const words=text.split(/\s+/),out=[];let line='';for(const word of words){const candidate=line?line+' '+word:word;if(ctx.measureText(candidate).width>maxWidth&&line){out.push(line);line=word;}else line=candidate;}if(line)out.push(line);if(out.length>maxLines){out.length=maxLines;let last=out[maxLines-1];while(last.length>3&&ctx.measureText(last+'…').width>maxWidth)last=last.slice(0,-1);out[maxLines-1]=last.replace(/[.,;:!?\s]+$/,'')+'…';}return out;}
+function blocoTexto(text,x,y,maxWidth,font,color,lineHeight,maxLines){ctx.font=font;ctx.fillStyle=color;ctx.textBaseline='alphabetic';const ls=linhas(text,maxWidth,font,maxLines);ls.forEach((line,i)=>ctx.fillText(line,x,y+i*lineHeight));return {lines:ls.length,bottom:y+(ls.length-1)*lineHeight};}
 ctx.clearRect(0,0,W,H);
-// Base and decorative geometry vary by chosen art direction.
-ctx.fillStyle=estilo==='minimal'?'#f7f8fb':cor;ctx.fillRect(0,0,W,H);
-if(estilo==='premium'){
- const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,cor);g.addColorStop(1,'#070b14');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
- ctx.fillStyle='rgba(245,185,66,.10)';ctx.beginPath();ctx.arc(1020,190,300,0,Math.PI*2);ctx.fill();
- ctx.strokeStyle='rgba(245,185,66,.55)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(1020,190,220,0,Math.PI*2);ctx.stroke();
- ctx.fillStyle=ouro;ctx.fillRect(72,76,155,13);
-}else if(estilo==='vibrante'){
- ctx.fillStyle=ouro;ctx.beginPath();ctx.arc(980,180,260,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.arc(100,1050,290,0,Math.PI*2);ctx.fill();
- ctx.save();ctx.translate(880,600);ctx.rotate(-.22);ctx.fillStyle='rgba(255,255,255,.09)';ctx.fillRect(-90,-260,260,900);ctx.restore();
- ctx.fillStyle=branco;ctx.fillRect(72,76,120,13);
-}else if(estilo==='minimal'){
- ctx.fillStyle=ouro;ctx.fillRect(0,0,W,26);ctx.fillStyle=cor;ctx.fillRect(72,80,12,220);
- ctx.strokeStyle=cor;ctx.lineWidth=3;ctx.beginPath();ctx.arc(900,250,125,0,Math.PI*2);ctx.stroke();
-}else if(estilo==='oferta'){
- ctx.fillStyle='#0a0e16';ctx.fillRect(0,0,W,H);
- ctx.fillStyle=ouro;ctx.beginPath();ctx.moveTo(700,0);ctx.lineTo(W,0);ctx.lineTo(W,430);ctx.closePath();ctx.fill();
- ctx.fillStyle=cor;ctx.fillRect(0,0,28,H);
-}else{
- ctx.fillStyle='rgba(245,185,66,.16)';ctx.beginPath();ctx.moveTo(760,0);ctx.lineTo(W,0);ctx.lineTo(W,700);ctx.closePath();ctx.fill();
- ctx.fillStyle='rgba(255,255,255,.07)';ctx.beginPath();ctx.moveTo(0,870);ctx.lineTo(W,620);ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
- ctx.fillStyle=ouro;ctx.fillRect(72,76,170,13);
-}
-// Brand signature: use the uploaded logo if available, otherwise a typographic mark.
-const logo=document.querySelector('.brand-logo');
-if(logo&&logo.complete&&logo.naturalWidth>0){try{ctx.save();ctx.globalAlpha=.98;ctx.drawImage(logo,72,112,104,104);ctx.restore();}catch(e){}}
-const logoUsado=logo&&logo.complete&&logo.naturalWidth>0;
-const marcaY=logoUsado?258:160;
-if(!logoUsado){ctx.fillStyle=estilo==='minimal'?cor:branco;ctx.font='bold 56px Arial';ctx.fillText('FÉNGO',72,marcaY);}
-ctx.fillStyle=estilo==='minimal'?cor:ouro;ctx.font='bold 24px Arial';ctx.fillText('BRANDING  •  MARKETING  •  COMUNICAÇÃO',72,marcaY+65);
-let y=marcaY+170;
-if(estilo==='oferta'){
- arredondado(72,y-50,310,58,16,ouro);ctx.fillStyle=escuro;ctx.font='bold 25px Arial';ctx.fillText('SOLUÇÕES PARA A TUA MARCA',92,y-12);y+=38;
-}
-const tituloFont=estilo==='minimal'?'bold 72px Arial':estilo==='vibrante'?'bold 82px Arial':'bold 76px Arial';
-const tituloCor=estilo==='minimal'?cor:branco;
-y=textoLinhas(titulo,72,y,900,tituloFont,tituloCor,estilo==='vibrante'?91:86,4)+28;
-const msgCor=estilo==='minimal'?'#394150':'#f1f4f8';
-y=textoLinhas(mensagem,76,y,870,'42px Arial',msgCor,59,6)+35;
-// Accent line and call-to-action block improve hierarchy.
-ctx.fillStyle=ouro;ctx.fillRect(76,y,130,8);y+=42;
-if(contacto){const boxY=Math.min(Math.max(y,H-300),H-245);arredondado(64,boxY,952,116,22,ouro);ctx.fillStyle=escuro;textoLinhas(contacto,96,boxY+48,850,'bold 34px Arial',escuro,40,2);}
-// Footer panel and pattern.
-const footerY=H-112;ctx.fillStyle=estilo==='minimal'?'#e8ebf1':'rgba(0,0,0,.22)';ctx.fillRect(0,footerY,W,112);
-ctx.fillStyle=estilo==='minimal'?cor:branco;ctx.font='bold 27px Arial';ctx.fillText('FÉNGO — A tua ideia, a nossa criação.',72,H-62);
-ctx.fillStyle=ouro;ctx.fillRect(W-190,H-73,118,7);
-document.getElementById('estadoGrafico').textContent='Novo design criado. Podes experimentar outro estilo, mudar a cor ou editar o texto.';
+// Fundos com composição própria para cada direcção artística.
+if(estilo==='premium'){const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,cor);g.addColorStop(1,'#070b14');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(245,185,66,.10)';ctx.beginPath();ctx.arc(1000,160,310,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(245,185,66,.4)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(1000,160,235,0,Math.PI*2);ctx.stroke();ctx.fillStyle=ouro;ctx.fillRect(72,68,145,12);}
+else if(estilo==='vibrante'){ctx.fillStyle=cor;ctx.fillRect(0,0,W,H);ctx.fillStyle=ouro;ctx.beginPath();ctx.arc(1000,170,250,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.arc(70,1120,280,0,Math.PI*2);ctx.fill();ctx.save();ctx.translate(900,630);ctx.rotate(-.24);ctx.fillStyle='rgba(255,255,255,.10)';ctx.fillRect(-110,-300,220,950);ctx.restore();ctx.fillStyle=branco;ctx.fillRect(72,68,120,12);}
+else if(estilo==='minimal'){ctx.fillStyle='#f7f8fb';ctx.fillRect(0,0,W,H);ctx.fillStyle=cor;ctx.fillRect(0,0,W,24);ctx.fillRect(72,75,12,190);ctx.strokeStyle=cor;ctx.lineWidth=4;ctx.beginPath();ctx.arc(930,180,130,0,Math.PI*2);ctx.stroke();}
+else if(estilo==='oferta'){ctx.fillStyle='#0a0e16';ctx.fillRect(0,0,W,H);ctx.fillStyle=ouro;ctx.beginPath();ctx.moveTo(680,0);ctx.lineTo(W,0);ctx.lineTo(W,420);ctx.closePath();ctx.fill();ctx.fillStyle=cor;ctx.fillRect(0,0,24,H);}
+else{ctx.fillStyle=cor;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(245,185,66,.18)';ctx.beginPath();ctx.moveTo(730,0);ctx.lineTo(W,0);ctx.lineTo(W,680);ctx.closePath();ctx.fill();ctx.fillStyle='rgba(255,255,255,.08)';ctx.beginPath();ctx.moveTo(0,930);ctx.lineTo(W,720);ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();ctx.fillStyle=ouro;ctx.fillRect(72,68,165,12);}
+const claro=estilo!=='minimal';
+// Cabeçalho da marca: espaço reservado para não competir com a mensagem.
+const logo=document.querySelector('.brand-logo');let logoUsado=false;
+if(logo&&logo.complete&&logo.naturalWidth>0){try{ctx.save();ctx.globalAlpha=.98;ctx.drawImage(logo,72,105,108,108);ctx.restore();logoUsado=true;}catch(e){}}
+if(!logoUsado){ctx.fillStyle=claro?branco:cor;ctx.font='bold 58px Arial';ctx.fillText('FÉNGO',72,158);}
+ctx.fillStyle=claro?ouro:cor;ctx.font='bold 22px Arial';ctx.fillText('BRANDING  •  MARKETING  •  COMUNICAÇÃO',72,logoUsado?250:218);
+ctx.fillStyle=claro?'rgba(255,255,255,.42)':'rgba(16,24,39,.22)';ctx.fillRect(72,282,936,2);
+if(estilo==='oferta'){arredondado(72,310,380,58,16,ouro);ctx.fillStyle=escuro;ctx.font='bold 24px Arial';ctx.fillText('DESTAQUE PARA A TUA MARCA',92,347);}
+// Hierarquia editorial: título, mensagem e chamada têm áreas independentes.
+const tituloY=estilo==='oferta'?465:420;
+const tituloFont=estilo==='vibrante'?'bold 76px Arial':estilo==='minimal'?'bold 70px Arial':'bold 72px Arial';
+const tituloCor=claro?branco:cor;
+const tituloBloco=blocoTexto(titulo,72,tituloY,920,tituloFont,tituloCor,82,3);
+const msgY=Math.max(estilo==='oferta'?730:690,tituloBloco.bottom+62);
+const msgFont=estilo==='minimal'?'40px Arial':'40px Arial';
+blocoTexto(mensagem,76,msgY,900,msgFont,claro?'#f1f4f8':'#394150',56,4);
+// Caixa da chamada para acção fixa na zona inferior, sem sobrepor o texto.
+const ctaY=contacto?1000:1050;
+if(contacto){arredondado(64,ctaY,952,132,22,ouro);ctx.fillStyle=escuro;ctx.font='bold 22px Arial';ctx.fillText('FALE CONNOSCO',96,ctaY+38);blocoTexto(contacto,96,ctaY+82,850,'bold 32px Arial',escuro,36,2);}
+else{ctx.fillStyle=ouro;ctx.fillRect(76,1030,132,8);}
+// Rodapé consistente e com respiro.
+const footerY=H-104;ctx.fillStyle=claro?'rgba(0,0,0,.25)':'#e8ebf1';ctx.fillRect(0,footerY,W,104);ctx.fillStyle=claro?branco:cor;ctx.font='bold 26px Arial';ctx.fillText('FÉNGO — A tua ideia, a nossa criação.',72,H-48);ctx.fillStyle=ouro;ctx.fillRect(W-190,H-60,118,7);
+document.getElementById('estadoGrafico').textContent='Design actualizado: título, mensagem e contacto têm espaços próprios. Podes mudar o estilo, a cor ou os textos.';
 }
 function guardarPostGrafico(){gerarPostGrafico();document.getElementById('postCanvas').toBlob(blob=>{if(!blob){document.getElementById('estadoGrafico').textContent='Não foi possível preparar a imagem. Tenta novamente.';return;}const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='fengo-post-grafico.png';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);document.getElementById('estadoGrafico').textContent='Imagem preparada para guardar. Se não aparecer, verifica as transferências do navegador.';},'image/png');}
 async function partilharPostGrafico(){
