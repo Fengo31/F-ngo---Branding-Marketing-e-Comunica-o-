@@ -201,40 +201,62 @@ ctx.fillStyle=claro?ouro:cor;ctx.font='bold 22px Arial';ctx.fillText('BRANDING  
 ctx.fillStyle=claro?'rgba(255,255,255,.42)':'rgba(16,24,39,.22)';ctx.fillRect(72,282,936,2);
 // Etiqueta da campanha para dar contexto imediato ao post.
 const etiquetaCor=estilo==='minimal'?cor:ouro;arredondado(72,310,Math.min(610,Math.max(330,temaAtual.rotulo.length*18)),52,15,etiquetaCor);ctx.fillStyle=estilo==='minimal'?branco:escuro;ctx.font='bold 22px Arial';ctx.fillText(temaAtual.rotulo,94,343);
-// Fotografia opcional ou símbolo vectorial da área.
-if(fotoPostAtual){
-  ctx.save();ctx.shadowColor='rgba(0,0,0,.28)';ctx.shadowBlur=28;ctx.shadowOffsetY=12;
-  desenharImagemCortada(ctx,fotoPostAtual,604,385,404,430,28);ctx.restore();
-  ctx.save();ctx.strokeStyle=ouro;ctx.lineWidth=8;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(604,385,404,430,28);else ctx.rect(604,385,404,430);ctx.stroke();ctx.restore();
-  ctx.fillStyle='rgba(16,24,39,.76)';ctx.fillRect(604,748,404,67);
-  ctx.fillStyle=branco;ctx.font='bold 22px Arial';ctx.fillText(temaAtual.rotulo,626,790);
-}else{
-ctx.save();ctx.translate(900,365);ctx.strokeStyle=claro?'rgba(255,255,255,.78)':cor;ctx.fillStyle=claro?'rgba(255,255,255,.10)':'rgba(16,24,39,.06)';ctx.lineWidth=8;
-if(tema==='restaurante'){ctx.beginPath();ctx.arc(0,0,48,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(0,0,31,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(-68,-35);ctx.lineTo(-68,36);ctx.moveTo(-82,-35);ctx.lineTo(-82,-4);ctx.moveTo(-54,-35);ctx.lineTo(-54,-4);ctx.moveTo(65,-35);ctx.lineTo(65,36);ctx.stroke();}
-else if(tema==='clinica'){ctx.beginPath();ctx.rect(-54,-54,108,108);ctx.fill();ctx.stroke();ctx.fillStyle=ouro;ctx.fillRect(-12,-38,24,76);ctx.fillRect(-38,-12,76,24);}
-else if(tema==='loja'){ctx.beginPath();ctx.moveTo(-52,-25);ctx.lineTo(52,-25);ctx.lineTo(42,48);ctx.lineTo(-42,48);ctx.closePath();ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(0,-25,24,Math.PI,0);ctx.stroke();}
-else if(tema==='evento'){for(let i=0;i<8;i++){ctx.save();ctx.rotate(i*Math.PI/4);ctx.fillStyle=i%2?ouro:(claro?branco:cor);ctx.fillRect(-7,-72,14,30);ctx.restore();}ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.stroke();}
-else if(tema==='corporativo'){ctx.strokeRect(-48,-48,96,96);ctx.beginPath();ctx.moveTo(-48,-12);ctx.lineTo(48,-12);ctx.moveTo(-15,-48);ctx.lineTo(-15,48);ctx.moveTo(18,-12);ctx.lineTo(18,48);ctx.stroke();}
-else{ctx.beginPath();ctx.moveTo(0,-56);ctx.lineTo(50,0);ctx.lineTo(0,56);ctx.lineTo(-50,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.stroke();}
+// Elementos visuais específicos e composição adaptada ao tipo de campanha.
+const layoutTema={
+  restaurante:{x:590,y:390,w:418,h:360,tx:72,tw:470,ty:465,fs:68},
+  clinica:{x:620,y:400,w:388,h:370,tx:72,tw:500,ty:455,fs:68},
+  loja:{x:610,y:390,w:398,h:390,tx:72,tw:490,ty:455,fs:70},
+  evento:{x:72,y:385,w:936,h:250,tx:72,tw:920,ty:690,fs:64},
+  corporativo:{x:615,y:395,w:393,h:350,tx:72,tw:500,ty:455,fs:66},
+  geral:{x:610,y:395,w:398,h:350,tx:72,tw:490,ty:455,fs:68}
+};
+const layout=layoutTema[tema]||layoutTema.geral;
+// Pequenos detalhes gráficos diferentes para cada sector.
+ctx.save();ctx.globalAlpha=.16;ctx.fillStyle=tema==='clinica'?'#74c9d4':tema==='restaurante'?'#ff875e':tema==='loja'?'#f5b942':tema==='evento'?'#ed8bd1':tema==='corporativo'?'#7da7ff':'#f5b942';
+if(tema==='restaurante'){ctx.beginPath();ctx.arc(1000,280,95,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(1000,280,65,0,Math.PI*2);ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=14;ctx.stroke();}
+else if(tema==='clinica'){ctx.fillRect(930,250,34,115);ctx.fillRect(890,290,115,34);}
+else if(tema==='loja'){ctx.beginPath();ctx.moveTo(860,250);ctx.lineTo(1030,250);ctx.lineTo(1000,410);ctx.lineTo(890,410);ctx.closePath();ctx.fill();}
+else if(tema==='evento'){for(let i=0;i<7;i++){ctx.save();ctx.translate(900+i*20,260+(i%2)*20);ctx.rotate(i*.4);ctx.fillRect(-6,-36,12,72);ctx.restore();}}
+else if(tema==='corporativo'){ctx.fillRect(880,245,130,130);ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=8;ctx.strokeRect(910,275,70,70);}
+else{ctx.beginPath();ctx.moveTo(970,220);ctx.lineTo(1060,310);ctx.lineTo(970,400);ctx.lineTo(880,310);ctx.closePath();ctx.fill();}
 ctx.restore();
+// Fotografia: formato e posição mudam consoante a campanha escolhida.
+if(fotoPostAtual){
+  const fx=layout.x,fy=layout.y,fw=layout.w,fh=layout.h;
+  ctx.save();ctx.shadowColor='rgba(0,0,0,.30)';ctx.shadowBlur=30;ctx.shadowOffsetY=12;
+  desenharImagemCortada(ctx,fotoPostAtual,fx,fy,fw,fh,tema==='evento'?24:30);ctx.restore();
+  ctx.save();ctx.strokeStyle=ouro;ctx.lineWidth=7;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(fx,fy,fw,fh,tema==='evento'?24:30);else ctx.rect(fx,fy,fw,fh);ctx.stroke();ctx.restore();
+  const faixaH=tema==='evento'?62:68;ctx.fillStyle='rgba(16,24,39,.78)';ctx.fillRect(fx,fy+fh-faixaH,fw,faixaH);
+  ctx.fillStyle=branco;ctx.font='bold 22px Arial';ctx.fillText(temaAtual.rotulo,fx+22,fy+fh-faixaH/2+8,fw-44);
+}else{
+  // Símbolo desenhado no próprio canvas, sem depender de imagens externas.
+  ctx.save();ctx.translate(900,365);ctx.strokeStyle=claro?'rgba(255,255,255,.82)':cor;ctx.fillStyle=claro?'rgba(255,255,255,.10)':'rgba(16,24,39,.06)';ctx.lineWidth=8;
+  if(tema==='restaurante'){ctx.beginPath();ctx.arc(0,0,48,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(0,0,31,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(-68,-35);ctx.lineTo(-68,36);ctx.moveTo(-82,-35);ctx.lineTo(-82,-4);ctx.moveTo(-54,-35);ctx.lineTo(-54,-4);ctx.moveTo(65,-35);ctx.lineTo(65,36);ctx.stroke();}
+  else if(tema==='clinica'){ctx.beginPath();ctx.rect(-54,-54,108,108);ctx.fill();ctx.stroke();ctx.fillStyle=ouro;ctx.fillRect(-12,-38,24,76);ctx.fillRect(-38,-12,76,24);}
+  else if(tema==='loja'){ctx.beginPath();ctx.moveTo(-52,-25);ctx.lineTo(52,-25);ctx.lineTo(42,48);ctx.lineTo(-42,48);ctx.closePath();ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(0,-25,24,Math.PI,0);ctx.stroke();}
+  else if(tema==='evento'){for(let i=0;i<8;i++){ctx.save();ctx.rotate(i*Math.PI/4);ctx.fillStyle=i%2?ouro:(claro?branco:cor);ctx.fillRect(-7,-72,14,30);ctx.restore();}ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.stroke();}
+  else if(tema==='corporativo'){ctx.strokeRect(-48,-48,96,96);ctx.beginPath();ctx.moveTo(-48,-12);ctx.lineTo(48,-12);ctx.moveTo(-15,-48);ctx.lineTo(-15,48);ctx.moveTo(18,-12);ctx.lineTo(18,48);ctx.stroke();}
+  else{ctx.beginPath();ctx.moveTo(0,-56);ctx.lineTo(50,0);ctx.lineTo(0,56);ctx.lineTo(-50,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.stroke();}
+  ctx.restore();
 }
 if(estilo==='oferta'){arredondado(72,375,380,58,16,ouro);ctx.fillStyle=escuro;ctx.font='bold 24px Arial';ctx.fillText('DESTAQUE PARA A TUA MARCA',92,412);}
-// Hierarquia editorial: título, mensagem e chamada têm áreas independentes.
-const tituloY=estilo==='oferta'?500:455;
-const tituloFont=estilo==='vibrante'?'bold 76px Arial':estilo==='minimal'?'bold 70px Arial':'bold 72px Arial';
+// Hierarquia editorial com área própria para título, mensagem e contacto.
+const tituloY=layout.ty+(estilo==='oferta'?35:0);
+const tituloFont=(estilo==='vibrante'?'bold ':'bold ')+(layout.fs-(estilo==='minimal'?4:0))+'px Arial';
 const tituloCor=claro?branco:cor;
-const larguraTexto=fotoPostAtual?480:920;
-const tituloBloco=blocoTexto(titulo,72,tituloY,larguraTexto,tituloFont,tituloCor,82,3);
-const msgY=Math.max(estilo==='oferta'?755:725,tituloBloco.bottom+62);
-const msgFont='36px Arial';
-blocoTexto(mensagem,76,msgY,fotoPostAtual?470:900,msgFont,claro?'#f1f4f8':'#394150',50,4);
-// Caixa da chamada para acção fixa na zona inferior, sem sobrepor o texto.
-const ctaY=contacto?1000:1050;
-if(contacto){arredondado(64,ctaY,952,132,22,ouro);ctx.fillStyle=escuro;ctx.font='bold 22px Arial';ctx.fillText('FALE CONNOSCO',96,ctaY+38);blocoTexto(contacto,96,ctaY+82,850,'bold 32px Arial',escuro,36,2);}
-else{ctx.fillStyle=ouro;ctx.fillRect(76,1030,132,8);}
+const textoLargura=(fotoPostAtual&&tema!=='evento')?layout.tw:920;
+const tituloBloco=blocoTexto(titulo,layout.tx,tituloY,textoLargura,tituloFont,tituloCor,Math.round(layout.fs*1.08),tema==='evento'?2:3);
+const msgY=Math.max(tema==='evento'?865:735,tituloBloco.bottom+(tema==='evento'?48:58));
+const msgLargura=(fotoPostAtual&&tema!=='evento')?layout.tw:900;
+const msgTamanho=tema==='evento'?31:34;
+blocoTexto(mensagem,76,msgY,msgLargura,msgTamanho+'px Arial',claro?'#f1f4f8':'#394150',tema==='evento'?42:47,tema==='evento'?3:4);
+// Chamada para ação em bloco contrastante, com espaço de segurança antes do rodapé.
+const ctaY=contacto?1040:1080;
+if(contacto){arredondado(64,ctaY,952,116,22,ouro);ctx.fillStyle=escuro;ctx.font='bold 20px Arial';ctx.fillText('FALE CONNOSCO',96,ctaY+32);blocoTexto(contacto,96,ctaY+72,850,'bold 29px Arial',escuro,32,2);}
+else{ctx.fillStyle=ouro;ctx.fillRect(76,1080,132,8);}
 // Rodapé consistente e com respiro.
 const footerY=H-104;ctx.fillStyle=claro?'rgba(0,0,0,.25)':'#e8ebf1';ctx.fillRect(0,footerY,W,104);ctx.fillStyle=claro?branco:cor;ctx.font='bold 26px Arial';ctx.fillText('FÉNGO — A tua ideia, a nossa criação.',72,H-48);ctx.fillStyle=ouro;ctx.fillRect(W-190,H-60,118,7);
-document.getElementById('estadoGrafico').textContent='Design actualizado com símbolo e etiqueta próprios para '+temaAtual.rotulo.toLowerCase()+'. Revê o título, a mensagem e o contacto.';
+document.getElementById('estadoGrafico').textContent='Composição visual adaptada a '+temaAtual.rotulo.toLowerCase()+'. Revê o título, a mensagem e o contacto antes de guardar.';
 }
 function guardarPostGrafico(){gerarPostGrafico();document.getElementById('postCanvas').toBlob(blob=>{if(!blob){document.getElementById('estadoGrafico').textContent='Não foi possível preparar a imagem. Tenta novamente.';return;}const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='fengo-post-grafico.png';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);document.getElementById('estadoGrafico').textContent='Imagem preparada para guardar. Se não aparecer, verifica as transferências do navegador.';},'image/png');}
 async function partilharPostGrafico(){
