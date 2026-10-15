@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -6,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101827">
 <title>FÉNGO | Marketing e Comunicação</title>
+
 <style>
 :root {
   --dark: #101827;
@@ -96,10 +96,7 @@ input, textarea, select {
   background: white;
 }
 textarea { min-height: 90px; resize: vertical; }
-button, .action {
-  cursor: pointer;
-  font: inherit;
-}
+button, .action { cursor: pointer; font: inherit; }
 .primary, .secondary, .danger {
   border: 0;
   border-radius: 8px;
@@ -122,7 +119,7 @@ button, .action {
   min-height: 45px;
 }
 .hidden { display: none !important; }
-.notice { color: var(--muted); font-size: 13px; }
+.notice { color: var(--muted); font-size: 13px; line-height: 1.5; }
 .post-preview {
   min-height: 240px;
   border-radius: 12px;
@@ -170,6 +167,7 @@ footer {
 }
 </style>
 </head>
+
 <body>
 <header>
   <div class="brand">
@@ -215,6 +213,7 @@ footer {
   <div id="textoGerado" class="result" aria-live="polite">
     O texto criado aparecerá aqui.
   </div>
+
   <div class="actions">
     <button class="secondary" onclick="copiarTexto()">Copiar texto</button>
     <button class="secondary" onclick="partilharTexto()">Partilhar</button>
@@ -254,13 +253,29 @@ footer {
     <p>Branding, Marketing e Comunicação</p>
     <small>FÉNGO</small>
   </div>
+
   <button class="secondary full" onclick="baixarArte()">Guardar arte como imagem</button>
   <p class="notice">A imagem será preparada no teu dispositivo para partilhares nas redes sociais.</p>
 </section>
 
 <section id="calendario" class="panel hidden">
   <h2>Calendário de publicações</h2>
-  <p class="notice">Organiza as tuas publicações por data. Os registos ficam guardados neste navegador.</p>
+  <p class="notice">
+    Organiza as publicações por data. Os registos ficam guardados neste navegador.
+  </p>
+
+  <div class="result">
+    <strong>Geração automática gratuita</strong>
+    <p id="estadoAutomatico" class="notice">
+      A aplicação pode preparar uma semana de conteúdos quando a abres.
+    </p>
+    <button class="primary full" onclick="gerarSemanaAutomatica(true)">
+      Gerar semana automaticamente
+    </button>
+    <p class="notice">
+      Esta versão cria conteúdos com modelos integrados. Não publica sozinha nas redes sociais.
+    </p>
+  </div>
 
   <label for="dataPost">Data da publicação</label>
   <input type="date" id="dataPost">
@@ -282,6 +297,7 @@ footer {
 
   <h3>Publicações planeadas</h3>
   <div id="listaCalendario"></div>
+
   <button class="secondary full" onclick="exportarCalendario()">Exportar calendário em texto</button>
 </section>
 </main>
@@ -327,6 +343,14 @@ function gerarTexto() {
 
   document.getElementById('textoGerado').textContent = texto;
   document.getElementById('plataformaPost').value = rede;
+
+  try {
+    localStorage.setItem('fengo_config', JSON.stringify({
+      publico: publico,
+      oferta: oferta,
+      contacto: contacto
+    }));
+  } catch (e) {}
 }
 
 async function copiarTexto() {
@@ -394,7 +418,7 @@ function atualizarArte() {
 
 function baixarArte() {
   atualizarArte();
-  const previa = document.getElementById('previaArte');
+
   const titulo = document.getElementById('tituloArte').value.trim() || 'A tua marca merece destaque';
   const mensagem = document.getElementById('textoArte').value.trim() || 'Branding, Marketing e Comunicação';
   const fundo = document.getElementById('corArte').value;
@@ -407,6 +431,7 @@ function baixarArte() {
 
   ctx.fillStyle = fundo;
   ctx.fillRect(0, 0, 1080, 1080);
+  ctx.textAlign = 'center';
 
   function desenharTexto(texto, x, y, max, altura, tamanho, corTexto) {
     ctx.fillStyle = corTexto;
@@ -414,6 +439,7 @@ function baixarArte() {
     const palavras = texto.split(/\s+/);
     let linha = '';
     let yy = y;
+
     for (const palavra of palavras) {
       const teste = linha ? linha + ' ' + palavra : palavra;
       if (ctx.measureText(teste).width > max && linha) {
@@ -424,34 +450,43 @@ function baixarArte() {
         linha = teste;
       }
     }
+
     if (linha) ctx.fillText(linha, x, yy);
     return yy;
   }
 
   const img = new Image();
+
   img.onload = function() {
     const ratio = Math.min(180 / img.width, 140 / img.height);
     const w = img.width * ratio;
     const h = img.height * ratio;
+
     ctx.drawImage(img, (1080 - w) / 2, 120, w, h);
 
     const y = desenharTexto(titulo, 540, 440, 900, 78, 58, cor);
-    const ym = desenharTexto(mensagem, 540, y + 100, 850, 54, 36,
-      fundo === '#ffffff' ? '#101827' : '#ffffff');
+    const ym = desenharTexto(
+      mensagem, 540, y + 100, 850, 54, 36,
+      fundo === '#ffffff' ? '#101827' : '#ffffff'
+    );
 
-    ctx.textAlign = 'center';
     ctx.fillStyle = fundo === '#ffffff' ? '#101827' : '#ffffff';
     ctx.font = 'bold 30px Arial';
-    ctx.fillText('FÉNGO | Branding, Marketing e Comunicação', 540, Math.min(980, ym + 120));
+    ctx.fillText(
+      'FÉNGO | Branding, Marketing e Comunicação',
+      540, Math.min(980, ym + 120)
+    );
 
     const a = document.createElement('a');
     a.download = 'publicacao-fengo.png';
     a.href = canvas.toDataURL('image/png');
     a.click();
   };
+
   img.onerror = function() {
     alert('Não foi possível carregar o logótipo. Confirma se a imagem está na mesma pasta do index.html.');
   };
+
   img.src = '455256797_122166216188057936_8214975404748919624_n.jpg';
 }
 
@@ -494,6 +529,137 @@ function guardarPost() {
   }
 }
 
+/* GERAÇÃO AUTOMÁTICA GRATUITA DE UMA SEMANA */
+
+function dataLocal(data) {
+  return data.getFullYear() + '-' +
+    String(data.getMonth() + 1).padStart(2, '0') + '-' +
+    String(data.getDate()).padStart(2, '0');
+}
+
+function obterConfiguracao() {
+  let config = {};
+
+  try {
+    config = JSON.parse(localStorage.getItem('fengo_config') || '{}');
+  } catch (e) {}
+
+  const publico = document.getElementById('publico').value.trim() ||
+    config.publico || 'empreendedores, lojas, clínicas e restaurantes';
+
+  const oferta = document.getElementById('oferta').value.trim() ||
+    config.oferta || 'serviços de design gráfico, branding e comunicação';
+
+  const contacto = document.getElementById('contacto').value.trim() ||
+    config.contacto || '';
+
+  return {publico, oferta, contacto};
+}
+
+function criarConteudoSemanal(numero, config) {
+  const temas = [
+    {
+      titulo: 'A tua marca merece destaque!',
+      mensagem: 'Uma boa apresentação ajuda o teu negócio a transmitir confiança.'
+    },
+    {
+      titulo: 'Dá vida às tuas ideias!',
+      mensagem: 'Transforma as tuas ideias em comunicação visual clara e profissional.'
+    },
+    {
+      titulo: 'A primeira impressão conta!',
+      mensagem: 'Valoriza a imagem do teu negócio com uma comunicação cuidada.'
+    },
+    {
+      titulo: 'Comunica com criatividade!',
+      mensagem: 'Uma mensagem bem apresentada pode aproximar a tua marca dos clientes.'
+    },
+    {
+      titulo: 'O teu negócio tem potencial!',
+      mensagem: 'Mostra ao teu público o valor dos teus produtos e serviços.'
+    },
+    {
+      titulo: 'Marca presença!',
+      mensagem: 'Mantém a tua marca visível com conteúdos úteis e uma identidade consistente.'
+    },
+    {
+      titulo: 'Prepara o próximo passo!',
+      mensagem: 'Investe numa imagem que represente a qualidade do teu trabalho.'
+    }
+  ];
+
+  const tema = temas[numero % temas.length];
+  let texto = '✨ ' + tema.titulo + '\n\n';
+  texto += tema.mensagem + '\n\n';
+  texto += 'Soluções para ' + config.publico + '.\n';
+  texto += 'Serviço: ' + config.oferta + '.\n\n';
+
+  if (config.contacto) {
+    texto += '📞 Contacto: ' + config.contacto + '\n\n';
+  }
+
+  texto += 'FÉNGO — Branding, Marketing e Comunicação\n';
+  texto += '#FENGO #Marketing #DesignGrafico #Comunicação';
+
+  return texto;
+}
+
+function gerarSemanaAutomatica(forcar) {
+  const chave = 'fengo_semana_gerada';
+  const hoje = new Date();
+  const inicio = dataLocal(hoje);
+  let semanaGuardada = '';
+
+  try {
+    semanaGuardada = localStorage.getItem(chave) || '';
+  } catch (e) {}
+
+  if (!forcar && semanaGuardada === inicio) {
+    atualizarEstadoAutomatico('Os conteúdos desta semana já foram preparados.');
+    return;
+  }
+
+  if (forcar && !confirm(
+    'Queres acrescentar 7 novas publicações ao calendário? As publicações existentes serão mantidas.'
+  )) {
+    return;
+  }
+
+  const config = obterConfiguracao();
+  const posts = lerCalendario();
+  const plataformas = ['Facebook', 'Instagram', 'WhatsApp'];
+
+  for (let i = 0; i < 7; i++) {
+    const dia = new Date(
+      hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + i
+    );
+
+    posts.push({
+      id: Date.now() + i,
+      data: dataLocal(dia),
+      hora: '18:00',
+      plataforma: plataformas[i % plataformas.length],
+      conteudo: criarConteudoSemanal(i, config)
+    });
+  }
+
+  try {
+    localStorage.setItem('fengo_calendario', JSON.stringify(posts));
+    localStorage.setItem(chave, inicio);
+    mostrarCalendario();
+    atualizarEstadoAutomatico('Semana preparada! Foram acrescentadas 7 publicações ao calendário.');
+
+    alert('Concluído! Foram criadas 7 publicações para os próximos dias.');
+  } catch (e) {
+    alert('Não foi possível guardar os conteúdos. Verifica o espaço disponível no navegador.');
+  }
+}
+
+function atualizarEstadoAutomatico(mensagem) {
+  const estado = document.getElementById('estadoAutomatico');
+  if (estado) estado.textContent = mensagem;
+}
+
 function mostrarCalendario() {
   const lista = document.getElementById('listaCalendario');
   const posts = lerCalendario().sort(function(a, b) {
@@ -520,11 +686,14 @@ function mostrarCalendario() {
     const apagar = document.createElement('button');
     apagar.className = 'danger';
     apagar.textContent = 'Remover';
+
     apagar.onclick = function() {
       if (!confirm('Queres remover esta publicação do calendário?')) return;
+
       const atualizados = lerCalendario().filter(function(p) {
         return p.id !== post.id;
       });
+
       localStorage.setItem('fengo_calendario', JSON.stringify(atualizados));
       mostrarCalendario();
     };
@@ -536,30 +705,38 @@ function mostrarCalendario() {
 
 function exportarCalendario() {
   const posts = lerCalendario();
+
   if (!posts.length) {
     alert('Não existem publicações para exportar.');
     return;
   }
-  const texto = posts.sort((a,b) =>
-    (a.data + a.hora).localeCompare(b.data + b.hora)
-  ).map(p => p.data + ' ' + p.hora + ' | ' + p.plataforma + '\n' + p.conteudo)
-   .join('\n\n----------------\n\n');
+
+  const texto = posts.sort(function(a, b) {
+    return (a.data + a.hora).localeCompare(b.data + b.hora);
+  }).map(function(p) {
+    return p.data + ' ' + p.hora + ' | ' + p.plataforma + '\n' + p.conteudo;
+  }).join('\n\n----------------\n\n');
 
   const blob = new Blob([texto], {type: 'text/plain;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
+
   a.href = url;
   a.download = 'calendario-fengo.txt';
   a.click();
+
   URL.revokeObjectURL(url);
 }
 
-document.getElementById('dataPost').value =
-  new Date().getFullYear() + '-' +
-  String(new Date().getMonth() + 1).padStart(2, '0') + '-' +
-  String(new Date().getDate()).padStart(2, '0');
+/* INICIALIZAÇÃO */
 
+const hoje = new Date();
+
+document.getElementById('dataPost').value = dataLocal(hoje);
 mostrarCalendario();
+
+/* Ao abrir a aplicação, prepara a semana se ainda não foi preparada hoje. */
+gerarSemanaAutomatica(false);
 </script>
 </body>
 </html>
