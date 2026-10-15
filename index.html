@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -26,6 +25,9 @@ button{background:#101827;color:white;padding:12px 15px;border:0;border-radius:8
 .day small{color:#697386}
 .day p{white-space:pre-wrap;overflow-wrap:anywhere}
 .status{color:#276749}
+.graphic-preview{width:100%;max-width:540px;margin:14px auto 0;border-radius:12px;overflow:hidden;background:#e9edf5}
+.graphic-preview canvas{display:block;width:100%;height:auto}
+.graphic-help{font-size:.92rem;color:#697386}
 footer{text-align:center;padding:22px;color:#697386}
 </style>
 </head>
@@ -35,118 +37,75 @@ footer{text-align:center;padding:22px;color:#697386}
 <p>Branding, Marketing e Comunicação</p>
 <p>O teu centro de criação de conteúdos</p>
 </header>
-
 <main>
 <section class="card">
 <h2>1. Gerador de publicações</h2>
 <p>Prepara textos para divulgar os teus serviços gráficos.</p>
-
 <label for="servico">Serviço a promover</label>
 <select id="servico">
-<option>Design gráfico e logotipos</option>
-<option>Cartões de visita</option>
-<option>Flyers e cartazes</option>
-<option>Banners e lonas publicitárias</option>
-<option>Identidade visual para empresas</option>
-<option>Impressão e personalização</option>
-<option>Gestão de redes sociais</option>
+<option>Design gráfico e logotipos</option><option>Cartões de visita</option><option>Flyers e cartazes</option><option>Banners e lonas publicitárias</option><option>Identidade visual para empresas</option><option>Impressão e personalização</option><option>Gestão de redes sociais</option>
 </select>
-
 <label for="publico">Público-alvo</label>
 <input id="publico" placeholder="Ex.: restaurantes, clínicas, empresas">
-
 <label for="oferta">Oferta ou contacto a divulgar</label>
 <input id="oferta" placeholder="Ex.: peça já o seu orçamento">
-
 <label for="tom">Estilo da publicação</label>
-<select id="tom">
-<option>Profissional e persuasivo</option>
-<option>Moderno e criativo</option>
-<option>Promocional e directo</option>
-<option>Educativo</option>
-</select>
-
-<button onclick="gerar()">Gerar publicação</button>
-<button class="secondary" onclick="limpar()">Limpar</button>
+<select id="tom"><option>Profissional e persuasivo</option><option>Moderno e criativo</option><option>Promocional e directo</option><option>Educativo</option></select>
+<button onclick="gerar()">Gerar publicação</button><button class="secondary" onclick="limpar()">Limpar</button>
 </section>
-
 <section class="card">
 <h2>2. Conteúdo criado</h2>
 <div id="resultado" class="result">A tua publicação aparecerá aqui.</div>
-<button onclick="copiarTexto(document.getElementById('resultado').textContent)">Copiar texto</button>
-<button class="secondary" onclick="partilhar()">Partilhar</button>
+<button onclick="copiarTexto(document.getElementById('resultado').textContent)">Copiar texto</button><button class="secondary" onclick="partilhar()">Partilhar</button>
 <p id="aviso" aria-live="polite"></p>
 </section>
-
 <section class="card">
 <h2>3. Calendário semanal de conteúdos</h2>
 <p>Cria sete ideias de publicações para os próximos sete dias, adaptadas aos serviços da FÉNGO.</p>
-<button onclick="gerarCalendario()">Gerar calendário semanal</button>
-<button class="secondary" onclick="carregarCalendario()">Ver calendário guardado</button>
-<div id="estadoCalendario" class="status" aria-live="polite"></div>
-<div id="calendario"></div>
+<button onclick="gerarCalendario()">Gerar calendário semanal</button><button class="secondary" onclick="carregarCalendario()">Ver calendário guardado</button>
+<div id="estadoCalendario" class="status" aria-live="polite"></div><div id="calendario"></div>
 </section>
-
 <section class="card">
-<h2>4. Próximas funcionalidades</h2>
-<p>✓ Gerador de textos promocionais.</p>
-<p>✓ Calendário semanal de conteúdos.</p>
-<p>✓ Guardar o plano neste navegador.</p>
-<p>✓ Copiar cada publicação.</p>
-<p>○ Integração oficial com Facebook e Instagram.</p>
-<p>○ Agendamento e publicação automática.</p>
-<p>○ Biblioteca de campanhas e análise de resultados.</p>
+<h2>4. Criador de posts gráficos</h2>
+<p>Transforma uma mensagem da FÉNGO numa imagem vertical pronta para guardar e partilhar.</p>
+<label for="graficoTitulo">Título do post</label>
+<input id="graficoTitulo" maxlength="70" value="A tua marca merece destacar-se!">
+<label for="graficoMensagem">Mensagem</label>
+<textarea id="graficoMensagem" maxlength="360">Design gráfico e comunicação visual para dar mais destaque ao teu negócio.</textarea>
+<label for="graficoContacto">Contacto ou chamada para acção</label>
+<input id="graficoContacto" maxlength="90" placeholder="Ex.: Contacte-nos para pedir um orçamento">
+<label for="graficoCor">Cor principal do post</label>
+<select id="graficoCor"><option value="#101827">Azul escuro FÉNGO</option><option value="#174b3a">Verde profissional</option><option value="#5b2c83">Roxo criativo</option><option value="#9f2d2d">Vermelho forte</option><option value="#164e8a">Azul moderno</option></select>
+<button onclick="usarTextoGerado()">Usar texto gerado</button><button onclick="gerarPostGrafico()">Criar pré-visualização</button>
+<div class="graphic-preview"><canvas id="postCanvas" width="1080" height="1350" role="img" aria-label="Pré-visualização do post gráfico FÉNGO"></canvas></div>
+<p class="graphic-help">Formato vertical 1080 × 1350, adequado para publicações em redes sociais. Revê os textos antes de partilhar.</p>
+<button onclick="guardarPostGrafico()">Guardar imagem</button><button class="secondary" onclick="partilharPostGrafico()">Partilhar imagem</button>
+<p id="estadoGrafico" class="status" aria-live="polite"></p>
+</section>
+<section class="card">
+<h2>5. Próximas funcionalidades</h2>
+<p>✓ Gerador de textos promocionais.</p><p>✓ Calendário semanal de conteúdos.</p><p>✓ Guardar o plano neste navegador.</p><p>✓ Copiar cada publicação.</p><p>✓ Criador de posts gráficos.</p><p>○ Integração oficial com Facebook e Instagram.</p><p>○ Agendamento e publicação automática.</p><p>○ Biblioteca de campanhas e análise de resultados.</p>
 <p class="gold"><strong>Nota:</strong> o calendário prepara e guarda conteúdos, mas ainda não publica automaticamente nas redes sociais.</p>
 </section>
 </main>
-
 <footer>© FÉNGO — Branding, Marketing e Comunicação</footer>
-
 <script>
 function gerar(){
 const servico=document.getElementById('servico').value;
 const publico=document.getElementById('publico').value.trim()||'clientes e empresas';
 const oferta=document.getElementById('oferta').value.trim()||'Contacte-nos para solicitar um orçamento';
 const tom=document.getElementById('tom').value;
-const aberturas={
-'Profissional e persuasivo':'Destaque a sua marca com uma apresentação profissional!',
-'Moderno e criativo':'A sua marca merece destacar-se e ser lembrada!',
-'Promocional e directo':'Está na hora de dar mais visibilidade ao seu negócio!',
-'Educativo':'Uma comunicação visual consistente ajuda o público a reconhecer a sua marca!'
-};
+const aberturas={'Profissional e persuasivo':'Destaque a sua marca com uma apresentação profissional!','Moderno e criativo':'A sua marca merece destacar-se e ser lembrada!','Promocional e directo':'Está na hora de dar mais visibilidade ao seu negócio!','Educativo':'Uma comunicação visual consistente ajuda o público a reconhecer a sua marca!'};
 const texto=aberturas[tom]+'\n\nA FÉNGO apresenta soluções de '+servico.toLowerCase()+', pensadas para '+publico+'.\n\n'+oferta+'.\n\nFÉNGO — Branding, Marketing e Comunicação\n\n#Fengo #DesignGrafico #Marketing #ComunicacaoVisual';
 document.getElementById('resultado').textContent=texto;
 document.getElementById('aviso').textContent='Publicação preparada. Revê os dados antes de divulgar.';
 }
-function limpar(){
-document.getElementById('publico').value='';
-document.getElementById('oferta').value='';
-document.getElementById('resultado').textContent='A tua publicação aparecerá aqui.';
-document.getElementById('aviso').textContent='';
-}
+function limpar(){document.getElementById('publico').value='';document.getElementById('oferta').value='';document.getElementById('resultado').textContent='A tua publicação aparecerá aqui.';document.getElementById('aviso').textContent='';}
 async function copiarTexto(texto){
-try{
-await navigator.clipboard.writeText(texto);
-document.getElementById('aviso').textContent='Texto copiado!';
-}catch(e){
-const campo=document.createElement('textarea');
-campo.value=texto;
-document.body.appendChild(campo);
-campo.select();
-const ok=document.execCommand('copy');
-campo.remove();
-document.getElementById('aviso').textContent=ok?'Texto copiado!':'Selecciona o texto e copia-o manualmente.';
+try{await navigator.clipboard.writeText(texto);document.getElementById('aviso').textContent='Texto copiado!';}
+catch(e){const campo=document.createElement('textarea');campo.value=texto;document.body.appendChild(campo);campo.select();const ok=document.execCommand('copy');campo.remove();document.getElementById('aviso').textContent=ok?'Texto copiado!':'Selecciona o texto e copia-o manualmente.';}
 }
-}
-async function partilhar(){
-const texto=document.getElementById('resultado').textContent;
-if(navigator.share){
-try{await navigator.share({title:'FÉNGO',text:texto});}catch(e){}
-}else{
-copiarTexto(texto);
-}
-}
-
+async function partilhar(){const texto=document.getElementById('resultado').textContent;if(navigator.share){try{await navigator.share({title:'FÉNGO',text:texto});}catch(e){}}else{copiarTexto(texto);}}
 const temas=[
 {nome:'Apresentar um serviço',abertura:'A primeira impressão conta!',corpo:'Apresente a sua marca com soluções de design gráfico feitas para comunicar com clareza.'},
 {nome:'Dica de design',abertura:'Uma dica para fortalecer a sua marca:',corpo:'Mantenha cores, letras e estilo visual consistentes nos seus materiais de comunicação.'},
@@ -156,79 +115,48 @@ const temas=[
 {nome:'Divulgar uma solução',abertura:'Dê mais destaque ao seu negócio!',corpo:'Conheça as nossas soluções de design e comunicação visual para divulgar os seus serviços.'},
 {nome:'Relacionamento',abertura:'Obrigado por acompanhar a FÉNGO!',corpo:'Continuamos dedicados a transformar ideias em comunicação visual clara, criativa e profissional.'}
 ];
-
-function dataISO(d){
-return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-function dataBonita(s){
-return new Date(s+'T12:00:00').toLocaleDateString('pt-PT',{weekday:'long',day:'2-digit',month:'long'});
-}
+function dataISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function dataBonita(s){return new Date(s+'T12:00:00').toLocaleDateString('pt-PT',{weekday:'long',day:'2-digit',month:'long'});}
 function gerarCalendario(){
-const servico=document.getElementById('servico').value;
-const publico=document.getElementById('publico').value.trim()||'clientes e empresas';
-const oferta=document.getElementById('oferta').value.trim()||'Envie uma mensagem para solicitar um orçamento';
-const plano=[];
-for(let i=0;i<7;i++){
-const d=new Date();
-d.setDate(d.getDate()+i);
-const tema=temas[i];
-const texto=tema.abertura+'\n\n'+tema.corpo+'\n\nServiço em destaque: '+servico+'.\nPensado para: '+publico+'.\n\n'+oferta+'.\n\nFÉNGO — Branding, Marketing e Comunicação\n\n#Fengo #DesignGrafico #Marketing #ComunicacaoVisual';
-plano.push({data:dataISO(d),tema:tema.nome,texto:texto});
+const servico=document.getElementById('servico').value,pub=document.getElementById('publico').value.trim()||'clientes e empresas',oferta=document.getElementById('oferta').value.trim()||'Envie uma mensagem para solicitar um orçamento',plano=[];
+for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);const tema=temas[i];const texto=tema.abertura+'\n\n'+tema.corpo+'\n\nServiço em destaque: '+servico+'.\nPensado para: '+pub+'.\n\n'+oferta+'.\n\nFÉNGO — Branding, Marketing e Comunicação\n\n#Fengo #DesignGrafico #Marketing #ComunicacaoVisual';plano.push({data:dataISO(d),tema:tema.nome,texto});}
+try{localStorage.setItem('fengo_calendario',JSON.stringify(plano));document.getElementById('estadoCalendario').textContent='Calendário criado e guardado neste navegador.';}catch(e){document.getElementById('estadoCalendario').textContent='Calendário criado. Guarda os textos importantes copiando-os.';}mostrarCalendario(plano);
 }
-try{
-localStorage.setItem('fengo_calendario',JSON.stringify(plano));
-document.getElementById('estadoCalendario').textContent='Calendário criado e guardado neste navegador.';
-}catch(e){
-document.getElementById('estadoCalendario').textContent='Calendário criado. Guarda os textos importantes copiando-os.';
+function mostrarCalendario(plano){const area=document.getElementById('calendario');area.textContent='';plano.forEach((item,i)=>{const caixa=document.createElement('article');caixa.className='day';const titulo=document.createElement('h3');titulo.textContent='Dia '+(i+1)+' — '+item.tema;const data=document.createElement('small');data.textContent=dataBonita(item.data);const texto=document.createElement('p');texto.textContent=item.texto;const botao=document.createElement('button');botao.textContent='Copiar esta publicação';botao.onclick=()=>copiarPublicacao(item.texto);caixa.append(titulo,data,texto,botao);area.appendChild(caixa);});}
+async function copiarPublicacao(texto){try{await navigator.clipboard.writeText(texto);}catch(e){const campo=document.createElement('textarea');campo.value=texto;document.body.appendChild(campo);campo.select();document.execCommand('copy');campo.remove();}document.getElementById('estadoCalendario').textContent='Texto copiado. Já podes colá-lo na rede social escolhida.';}
+function carregarCalendario(){try{const plano=JSON.parse(localStorage.getItem('fengo_calendario')||'null');if(Array.isArray(plano)&&plano.length){mostrarCalendario(plano);document.getElementById('estadoCalendario').textContent='Calendário guardado carregado.';}else{document.getElementById('estadoCalendario').textContent='Ainda não existe calendário guardado. Toca em Gerar calendário semanal.';}}catch(e){document.getElementById('estadoCalendario').textContent='Não foi possível carregar o calendário guardado.';}}
+function usarTextoGerado(){
+const texto=document.getElementById('resultado').textContent.trim();
+if(!texto||texto==='A tua publicação aparecerá aqui.'){document.getElementById('estadoGrafico').textContent='Gera primeiro uma publicação na secção 1, ou escreve a tua mensagem acima.';return;}
+const linhas=texto.split('\n').map(s=>s.trim()).filter(Boolean);
+document.getElementById('graficoTitulo').value=(linhas[0]||'A tua marca merece destacar-se!').slice(0,70);
+const marca=linhas.findIndex(l=>l.startsWith('FÉNGO'));
+document.getElementById('graficoMensagem').value=linhas.slice(1,marca>0?marca:Math.min(linhas.length,4)).join(' ').slice(0,360);
+const contacto=linhas.find(l=>/contact|orçamento|mensagem|peça já|envie/i.test(l));if(contacto)document.getElementById('graficoContacto').value=contacto.slice(0,90);
+gerarPostGrafico();
 }
-mostrarCalendario(plano);
+function gerarPostGrafico(){
+const canvas=document.getElementById('postCanvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
+const titulo=document.getElementById('graficoTitulo').value.trim()||'A tua marca merece destacar-se!',mensagem=document.getElementById('graficoMensagem').value.trim()||'Design gráfico e comunicação visual para o teu negócio.',contacto=document.getElementById('graficoContacto').value.trim(),cor=document.getElementById('graficoCor').value;
+ctx.clearRect(0,0,W,H);ctx.fillStyle=cor;ctx.fillRect(0,0,W,H);ctx.fillStyle='#f5b942';ctx.fillRect(72,76,145,12);
+ctx.fillStyle='#fff';ctx.font='bold 48px Arial';ctx.fillText('FÉNGO',72,160);
+ctx.fillStyle='rgba(255,255,255,0.12)';ctx.beginPath();ctx.arc(1000,300,240,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#f5b942';ctx.font='bold 30px Arial';ctx.fillText('BRANDING • MARKETING • COMUNICAÇÃO',72,245);
+function wrap(text,maxWidth,font){ctx.font=font;const words=text.split(/\s+/),lines=[];let line='';for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else{line=test;}}if(line)lines.push(line);return lines;}
+let y=390;ctx.fillStyle='#fff';ctx.font='bold 78px Arial';wrap(titulo,900,'bold 78px Arial').slice(0,4).forEach(line=>{ctx.fillText(line,72,y);y+=92;});y+=30;
+ctx.font='42px Arial';ctx.fillStyle='#f1f4f8';wrap(mensagem,900,'42px Arial').slice(0,8).forEach(line=>{ctx.fillText(line,72,y);y+=58;});
+if(contacto){const boxY=H-270;ctx.fillStyle='#f5b942';ctx.beginPath();ctx.roundRect(64,boxY,952,112,20);ctx.fill();ctx.fillStyle='#101827';ctx.font='bold 34px Arial';wrap(contacto,860,'bold 34px Arial').slice(0,2).forEach((line,i)=>ctx.fillText(line,96,boxY+48+i*40));}
+ctx.fillStyle='rgba(255,255,255,0.78)';ctx.font='bold 28px Arial';ctx.fillText('FÉNGO — A tua ideia, a nossa criação.',72,H-88);
+document.getElementById('estadoGrafico').textContent='Pré-visualização criada. Confirma os textos e as quebras de linha.';
 }
-function mostrarCalendario(plano){
-const area=document.getElementById('calendario');
-area.textContent='';
-plano.forEach((item,i)=>{
-const caixa=document.createElement('article');
-caixa.className='day';
-const titulo=document.createElement('h3');
-titulo.textContent='Dia '+(i+1)+' — '+item.tema;
-const data=document.createElement('small');
-data.textContent=dataBonita(item.data);
-const texto=document.createElement('p');
-texto.textContent=item.texto;
-const botao=document.createElement('button');
-botao.textContent='Copiar esta publicação';
-botao.onclick=()=>copiarPublicacao(item.texto);
-caixa.append(titulo,data,texto,botao);
-area.appendChild(caixa);
-});
-}
-async function copiarPublicacao(texto){
-try{
-await navigator.clipboard.writeText(texto);
-}catch(e){
-const campo=document.createElement('textarea');
-campo.value=texto;
-document.body.appendChild(campo);
-campo.select();
-document.execCommand('copy');
-campo.remove();
-}
-document.getElementById('estadoCalendario').textContent='Texto copiado. Já podes colá-lo na rede social escolhida.';
-}
-function carregarCalendario(){
-try{
-const plano=JSON.parse(localStorage.getItem('fengo_calendario')||'null');
-if(Array.isArray(plano)&&plano.length){
-mostrarCalendario(plano);
-document.getElementById('estadoCalendario').textContent='Calendário guardado carregado.';
-}else{
-document.getElementById('estadoCalendario').textContent='Ainda não existe calendário guardado. Toca em Gerar calendário semanal.';
-}
-}catch(e){
-document.getElementById('estadoCalendario').textContent='Não foi possível carregar o calendário guardado.';
-}
+function guardarPostGrafico(){gerarPostGrafico();document.getElementById('postCanvas').toBlob(blob=>{if(!blob){document.getElementById('estadoGrafico').textContent='Não foi possível preparar a imagem. Tenta novamente.';return;}const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='fengo-post-grafico.png';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);document.getElementById('estadoGrafico').textContent='Imagem preparada para guardar. Se não aparecer, verifica as transferências do navegador.';},'image/png');}
+async function partilharPostGrafico(){
+gerarPostGrafico();const canvas=document.getElementById('postCanvas');
+if(!navigator.share||!navigator.canShare){guardarPostGrafico();document.getElementById('estadoGrafico').textContent='A partilha directa de imagens não está disponível. Guarda a imagem e partilha-a manualmente.';return;}
+canvas.toBlob(async blob=>{if(!blob)return;const file=new File([blob],'fengo-post-grafico.png',{type:'image/png'});try{if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'FÉNGO — Post gráfico',text:'Criado com a FÉNGO — Branding, Marketing e Comunicação.'});document.getElementById('estadoGrafico').textContent='Janela de partilha aberta.';}else{guardarPostGrafico();document.getElementById('estadoGrafico').textContent='Guarda a imagem e anexa-a manualmente.';}}catch(e){if(e.name!=='AbortError')document.getElementById('estadoGrafico').textContent='A partilha foi interrompida. Podes guardar a imagem e partilhá-la manualmente.';}},'image/png');
 }
 carregarCalendario();
+gerarPostGrafico();
 </script>
 </body>
 </html>
