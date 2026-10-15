@@ -85,6 +85,10 @@ footer{text-align:center;padding:22px;color:#697386}
 <select id="graficoEstilo"><option value="premium">Premium — elegante e sofisticado</option><option value="vibrante">Vibrante — formas e energia</option><option value="minimal">Minimalista — limpo e moderno</option><option value="oferta">Oferta — destaque comercial</option><option value="editorial">Editorial — composição assimétrica</option></select>
 <label for="graficoTema">Tipo de campanha</label>
 <select id="graficoTema"><option value="geral">Geral / marca</option><option value="restaurante">Restaurante / alimentação</option><option value="clinica">Clínica / saúde</option><option value="loja">Loja / comércio</option><option value="evento">Evento / celebração</option><option value="corporativo">Empresa / serviços profissionais</option></select>
+<label for="fotoPost">Fotografia do produto, serviço ou negócio (opcional)</label>
+<input id="fotoPost" type="file" accept="image/*">
+<p class="graphic-help">Escolhe uma fotografia do telemóvel para dar mais vida ao post. A imagem é usada apenas neste navegador.</p>
+<button class="secondary" type="button" onclick="removerFotoPost()">Remover fotografia</button>
 <button onclick="usarTextoGerado()">Usar texto gerado</button><button onclick="gerarPostGrafico()">Criar pré-visualização</button>
 <div class="graphic-preview"><canvas id="postCanvas" width="1080" height="1350" role="img" aria-label="Pré-visualização do post gráfico FÉNGO"></canvas></div>
 <p class="graphic-help">Formato vertical 1080 × 1350, adequado para publicações em redes sociais. Revê os textos antes de partilhar.</p>
@@ -93,7 +97,7 @@ footer{text-align:center;padding:22px;color:#697386}
 </section>
 <section class="card">
 <h2>5. Próximas funcionalidades</h2>
-<p>✓ Gerador manual e automático de textos promocionais.</p><p>✓ Calendário semanal de conteúdos.</p><p>✓ Guardar o plano neste navegador.</p><p>✓ Copiar cada publicação.</p><p>✓ Criador de posts gráficos.</p><p>○ Integração oficial com Facebook e Instagram.</p><p>○ Agendamento e publicação automática.</p><p>○ Biblioteca de campanhas e análise de resultados.</p>
+<p>✓ Gerador manual e automático de textos promocionais.</p><p>✓ Calendário semanal de conteúdos.</p><p>✓ Guardar o plano neste navegador.</p><p>✓ Copiar cada publicação.</p><p>✓ Criador de posts gráficos com fotografia opcional.</p><p>○ Integração oficial com Facebook e Instagram.</p><p>○ Agendamento e publicação automática.</p><p>○ Biblioteca de campanhas e análise de resultados.</p>
 <p class="gold"><strong>Nota:</strong> o calendário prepara e guarda conteúdos, mas ainda não publica automaticamente nas redes sociais.</p>
 </section>
 </main>
@@ -158,6 +162,15 @@ document.getElementById('graficoMensagem').value=linhas.slice(1,marca>0?marca:Ma
 const contacto=linhas.find(l=>/contact|orçamento|mensagem|peça já|envie/i.test(l));if(contacto)document.getElementById('graficoContacto').value=contacto.slice(0,90);
 gerarPostGrafico();
 }
+let fotoPostAtual=null;
+document.getElementById('fotoPost').addEventListener('change',function(){
+const ficheiro=this.files&&this.files[0];
+if(!ficheiro){fotoPostAtual=null;gerarPostGrafico();return;}
+if(!ficheiro.type.startsWith('image/')){document.getElementById('estadoGrafico').textContent='Escolhe um ficheiro de imagem válido.';this.value='';return;}
+const leitor=new FileReader();leitor.onload=function(){const img=new Image();img.onload=function(){fotoPostAtual=img;gerarPostGrafico();document.getElementById('estadoGrafico').textContent='Fotografia adicionada ao post. Podes mudar o estilo ou o texto.';};img.onerror=function(){document.getElementById('estadoGrafico').textContent='Não foi possível abrir essa imagem. Experimenta outra fotografia.';};img.src=leitor.result;};leitor.readAsDataURL(ficheiro);
+});
+function removerFotoPost(){fotoPostAtual=null;document.getElementById('fotoPost').value='';gerarPostGrafico();document.getElementById('estadoGrafico').textContent='Fotografia removida. O post foi actualizado.';}
+function desenharImagemCortada(ctx,img,x,y,w,h,r){ctx.save();ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else{ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);}ctx.clip();const escala=Math.max(w/img.width,h/img.height),dw=img.width*escala,dh=img.height*escala;ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);ctx.restore();}
 function gerarPostGrafico(){
 const canvas=document.getElementById('postCanvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
 const titulo=document.getElementById('graficoTitulo').value.trim()||'A tua marca merece destacar-se!';
@@ -188,7 +201,14 @@ ctx.fillStyle=claro?ouro:cor;ctx.font='bold 22px Arial';ctx.fillText('BRANDING  
 ctx.fillStyle=claro?'rgba(255,255,255,.42)':'rgba(16,24,39,.22)';ctx.fillRect(72,282,936,2);
 // Etiqueta da campanha para dar contexto imediato ao post.
 const etiquetaCor=estilo==='minimal'?cor:ouro;arredondado(72,310,Math.min(610,Math.max(330,temaAtual.rotulo.length*18)),52,15,etiquetaCor);ctx.fillStyle=estilo==='minimal'?branco:escuro;ctx.font='bold 22px Arial';ctx.fillText(temaAtual.rotulo,94,343);
-// Símbolo geométrico específico da área: desenho vetorial, sem imagens externas.
+// Fotografia opcional ou símbolo vectorial da área.
+if(fotoPostAtual){
+  ctx.save();ctx.shadowColor='rgba(0,0,0,.28)';ctx.shadowBlur=28;ctx.shadowOffsetY=12;
+  desenharImagemCortada(ctx,fotoPostAtual,604,385,404,430,28);ctx.restore();
+  ctx.save();ctx.strokeStyle=ouro;ctx.lineWidth=8;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(604,385,404,430,28);else ctx.rect(604,385,404,430);ctx.stroke();ctx.restore();
+  ctx.fillStyle='rgba(16,24,39,.76)';ctx.fillRect(604,748,404,67);
+  ctx.fillStyle=branco;ctx.font='bold 22px Arial';ctx.fillText(temaAtual.rotulo,626,790);
+}else{
 ctx.save();ctx.translate(900,365);ctx.strokeStyle=claro?'rgba(255,255,255,.78)':cor;ctx.fillStyle=claro?'rgba(255,255,255,.10)':'rgba(16,24,39,.06)';ctx.lineWidth=8;
 if(tema==='restaurante'){ctx.beginPath();ctx.arc(0,0,48,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(0,0,31,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(-68,-35);ctx.lineTo(-68,36);ctx.moveTo(-82,-35);ctx.lineTo(-82,-4);ctx.moveTo(-54,-35);ctx.lineTo(-54,-4);ctx.moveTo(65,-35);ctx.lineTo(65,36);ctx.stroke();}
 else if(tema==='clinica'){ctx.beginPath();ctx.rect(-54,-54,108,108);ctx.fill();ctx.stroke();ctx.fillStyle=ouro;ctx.fillRect(-12,-38,24,76);ctx.fillRect(-38,-12,76,24);}
@@ -197,15 +217,17 @@ else if(tema==='evento'){for(let i=0;i<8;i++){ctx.save();ctx.rotate(i*Math.PI/4)
 else if(tema==='corporativo'){ctx.strokeRect(-48,-48,96,96);ctx.beginPath();ctx.moveTo(-48,-12);ctx.lineTo(48,-12);ctx.moveTo(-15,-48);ctx.lineTo(-15,48);ctx.moveTo(18,-12);ctx.lineTo(18,48);ctx.stroke();}
 else{ctx.beginPath();ctx.moveTo(0,-56);ctx.lineTo(50,0);ctx.lineTo(0,56);ctx.lineTo(-50,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.stroke();}
 ctx.restore();
+}
 if(estilo==='oferta'){arredondado(72,375,380,58,16,ouro);ctx.fillStyle=escuro;ctx.font='bold 24px Arial';ctx.fillText('DESTAQUE PARA A TUA MARCA',92,412);}
 // Hierarquia editorial: título, mensagem e chamada têm áreas independentes.
 const tituloY=estilo==='oferta'?500:455;
 const tituloFont=estilo==='vibrante'?'bold 76px Arial':estilo==='minimal'?'bold 70px Arial':'bold 72px Arial';
 const tituloCor=claro?branco:cor;
-const tituloBloco=blocoTexto(titulo,72,tituloY,920,tituloFont,tituloCor,82,3);
+const larguraTexto=fotoPostAtual?480:920;
+const tituloBloco=blocoTexto(titulo,72,tituloY,larguraTexto,tituloFont,tituloCor,82,3);
 const msgY=Math.max(estilo==='oferta'?755:725,tituloBloco.bottom+62);
-const msgFont=estilo==='minimal'?'40px Arial':'40px Arial';
-blocoTexto(mensagem,76,msgY,900,msgFont,claro?'#f1f4f8':'#394150',56,4);
+const msgFont='36px Arial';
+blocoTexto(mensagem,76,msgY,fotoPostAtual?470:900,msgFont,claro?'#f1f4f8':'#394150',50,4);
 // Caixa da chamada para acção fixa na zona inferior, sem sobrepor o texto.
 const ctaY=contacto?1000:1050;
 if(contacto){arredondado(64,ctaY,952,132,22,ouro);ctx.fillStyle=escuro;ctx.font='bold 22px Arial';ctx.fillText('FALE CONNOSCO',96,ctaY+38);blocoTexto(contacto,96,ctaY+82,850,'bold 32px Arial',escuro,36,2);}
