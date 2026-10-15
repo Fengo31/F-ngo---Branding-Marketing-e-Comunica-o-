@@ -81,6 +81,8 @@ footer{text-align:center;padding:22px;color:#697386}
 <input id="graficoContacto" maxlength="90" placeholder="Ex.: Contacte-nos para pedir um orçamento">
 <label for="graficoCor">Cor principal do post</label>
 <select id="graficoCor"><option value="#101827">Azul escuro FÉNGO</option><option value="#174b3a">Verde profissional</option><option value="#5b2c83">Roxo criativo</option><option value="#9f2d2d">Vermelho forte</option><option value="#164e8a">Azul moderno</option></select>
+<label for="graficoEstilo">Estilo visual</label>
+<select id="graficoEstilo"><option value="premium">Premium — elegante e sofisticado</option><option value="vibrante">Vibrante — formas e energia</option><option value="minimal">Minimalista — limpo e moderno</option><option value="oferta">Oferta — destaque comercial</option><option value="editorial">Editorial — composição assimétrica</option></select>
 <button onclick="usarTextoGerado()">Usar texto gerado</button><button onclick="gerarPostGrafico()">Criar pré-visualização</button>
 <div class="graphic-preview"><canvas id="postCanvas" width="1080" height="1350" role="img" aria-label="Pré-visualização do post gráfico FÉNGO"></canvas></div>
 <p class="graphic-help">Formato vertical 1080 × 1350, adequado para publicações em redes sociais. Revê os textos antes de partilhar.</p>
@@ -156,20 +158,64 @@ gerarPostGrafico();
 }
 function gerarPostGrafico(){
 const canvas=document.getElementById('postCanvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
-const titulo=document.getElementById('graficoTitulo').value.trim()||'A tua marca merece destacar-se!',mensagem=document.getElementById('graficoMensagem').value.trim()||'Design gráfico e comunicação visual para o teu negócio.',contacto=document.getElementById('graficoContacto').value.trim(),cor=document.getElementById('graficoCor').value;
-ctx.clearRect(0,0,W,H);ctx.fillStyle=cor;ctx.fillRect(0,0,W,H);
-const grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,'rgba(255,255,255,0.10)');grad.addColorStop(1,'rgba(0,0,0,0.22)');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-ctx.fillStyle='#f5b942';ctx.fillRect(72,76,170,14);
-ctx.fillStyle='rgba(245,185,66,0.10)';ctx.beginPath();ctx.arc(1020,1110,330,0,Math.PI*2);ctx.fill();
-ctx.fillStyle='#fff';ctx.font='bold 48px Arial';ctx.fillText('FÉNGO',72,160);
-ctx.fillStyle='rgba(255,255,255,0.10)';ctx.beginPath();ctx.arc(1000,300,240,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(245,185,66,0.18)';ctx.beginPath();ctx.arc(1000,300,170,0,Math.PI*2);ctx.fill();
-ctx.fillStyle='#f5b942';ctx.font='bold 30px Arial';ctx.fillText('BRANDING • MARKETING • COMUNICAÇÃO',72,245);
+const titulo=document.getElementById('graficoTitulo').value.trim()||'A tua marca merece destacar-se!';
+const mensagem=document.getElementById('graficoMensagem').value.trim()||'Design gráfico e comunicação visual para o teu negócio.';
+const contacto=document.getElementById('graficoContacto').value.trim();
+const cor=document.getElementById('graficoCor').value;
+const estilo=document.getElementById('graficoEstilo')?.value||'premium';
+const ouro='#f5b942',branco='#ffffff',escuro='#101827';
+function arredondado(x,y,w,h,r,fill){ctx.fillStyle=fill;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else{ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);}ctx.fill();}
 function wrap(text,maxWidth,font){ctx.font=font;const words=text.split(/\s+/),lines=[];let line='';for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else{line=test;}}if(line)lines.push(line);return lines;}
-let y=390;ctx.fillStyle='#fff';ctx.font='bold 78px Arial';wrap(titulo,900,'bold 78px Arial').slice(0,4).forEach(line=>{ctx.fillText(line,72,y);y+=92;});y+=30;
-ctx.font='42px Arial';ctx.fillStyle='#f1f4f8';wrap(mensagem,900,'42px Arial').slice(0,8).forEach(line=>{ctx.fillText(line,72,y);y+=58;});
-if(contacto){const boxY=H-270;ctx.fillStyle='#f5b942';ctx.beginPath();ctx.roundRect(64,boxY,952,112,20);ctx.fill();ctx.fillStyle='#101827';ctx.font='bold 34px Arial';wrap(contacto,860,'bold 34px Arial').slice(0,2).forEach((line,i)=>ctx.fillText(line,96,boxY+48+i*40));}
-ctx.fillStyle='rgba(255,255,255,0.78)';ctx.font='bold 28px Arial';ctx.fillText('FÉNGO — A tua ideia, a nossa criação.',72,H-88);
-document.getElementById('estadoGrafico').textContent='Pré-visualização criada. Confirma os textos e as quebras de linha.';
+function textoLinhas(text,x,y,maxWidth,font,color,lineHeight,maxLines){ctx.font=font;ctx.fillStyle=color;const lines=wrap(text,maxWidth,font).slice(0,maxLines);lines.forEach(line=>{ctx.fillText(line,x,y);y+=lineHeight;});return y;}
+ctx.clearRect(0,0,W,H);
+// Base and decorative geometry vary by chosen art direction.
+ctx.fillStyle=estilo==='minimal'?'#f7f8fb':cor;ctx.fillRect(0,0,W,H);
+if(estilo==='premium'){
+ const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,cor);g.addColorStop(1,'#070b14');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ ctx.fillStyle='rgba(245,185,66,.10)';ctx.beginPath();ctx.arc(1020,190,300,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='rgba(245,185,66,.55)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(1020,190,220,0,Math.PI*2);ctx.stroke();
+ ctx.fillStyle=ouro;ctx.fillRect(72,76,155,13);
+}else if(estilo==='vibrante'){
+ ctx.fillStyle=ouro;ctx.beginPath();ctx.arc(980,180,260,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.arc(100,1050,290,0,Math.PI*2);ctx.fill();
+ ctx.save();ctx.translate(880,600);ctx.rotate(-.22);ctx.fillStyle='rgba(255,255,255,.09)';ctx.fillRect(-90,-260,260,900);ctx.restore();
+ ctx.fillStyle=branco;ctx.fillRect(72,76,120,13);
+}else if(estilo==='minimal'){
+ ctx.fillStyle=ouro;ctx.fillRect(0,0,W,26);ctx.fillStyle=cor;ctx.fillRect(72,80,12,220);
+ ctx.strokeStyle=cor;ctx.lineWidth=3;ctx.beginPath();ctx.arc(900,250,125,0,Math.PI*2);ctx.stroke();
+}else if(estilo==='oferta'){
+ ctx.fillStyle='#0a0e16';ctx.fillRect(0,0,W,H);
+ ctx.fillStyle=ouro;ctx.beginPath();ctx.moveTo(700,0);ctx.lineTo(W,0);ctx.lineTo(W,430);ctx.closePath();ctx.fill();
+ ctx.fillStyle=cor;ctx.fillRect(0,0,28,H);
+}else{
+ ctx.fillStyle='rgba(245,185,66,.16)';ctx.beginPath();ctx.moveTo(760,0);ctx.lineTo(W,0);ctx.lineTo(W,700);ctx.closePath();ctx.fill();
+ ctx.fillStyle='rgba(255,255,255,.07)';ctx.beginPath();ctx.moveTo(0,870);ctx.lineTo(W,620);ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
+ ctx.fillStyle=ouro;ctx.fillRect(72,76,170,13);
+}
+// Brand signature: use the uploaded logo if available, otherwise a typographic mark.
+const logo=document.querySelector('.brand-logo');
+if(logo&&logo.complete&&logo.naturalWidth>0){try{ctx.save();ctx.globalAlpha=.98;ctx.drawImage(logo,72,112,104,104);ctx.restore();}catch(e){}}
+const logoUsado=logo&&logo.complete&&logo.naturalWidth>0;
+const marcaY=logoUsado?258:160;
+if(!logoUsado){ctx.fillStyle=estilo==='minimal'?cor:branco;ctx.font='bold 56px Arial';ctx.fillText('FÉNGO',72,marcaY);}
+ctx.fillStyle=estilo==='minimal'?cor:ouro;ctx.font='bold 24px Arial';ctx.fillText('BRANDING  •  MARKETING  •  COMUNICAÇÃO',72,marcaY+65);
+let y=marcaY+170;
+if(estilo==='oferta'){
+ arredondado(72,y-50,310,58,16,ouro);ctx.fillStyle=escuro;ctx.font='bold 25px Arial';ctx.fillText('SOLUÇÕES PARA A TUA MARCA',92,y-12);y+=38;
+}
+const tituloFont=estilo==='minimal'?'bold 72px Arial':estilo==='vibrante'?'bold 82px Arial':'bold 76px Arial';
+const tituloCor=estilo==='minimal'?cor:branco;
+y=textoLinhas(titulo,72,y,900,tituloFont,tituloCor,estilo==='vibrante'?91:86,4)+28;
+const msgCor=estilo==='minimal'?'#394150':'#f1f4f8';
+y=textoLinhas(mensagem,76,y,870,'42px Arial',msgCor,59,6)+35;
+// Accent line and call-to-action block improve hierarchy.
+ctx.fillStyle=ouro;ctx.fillRect(76,y,130,8);y+=42;
+if(contacto){const boxY=Math.min(Math.max(y,H-300),H-245);arredondado(64,boxY,952,116,22,ouro);ctx.fillStyle=escuro;textoLinhas(contacto,96,boxY+48,850,'bold 34px Arial',escuro,40,2);}
+// Footer panel and pattern.
+const footerY=H-112;ctx.fillStyle=estilo==='minimal'?'#e8ebf1':'rgba(0,0,0,.22)';ctx.fillRect(0,footerY,W,112);
+ctx.fillStyle=estilo==='minimal'?cor:branco;ctx.font='bold 27px Arial';ctx.fillText('FÉNGO — A tua ideia, a nossa criação.',72,H-62);
+ctx.fillStyle=ouro;ctx.fillRect(W-190,H-73,118,7);
+document.getElementById('estadoGrafico').textContent='Novo design criado. Podes experimentar outro estilo, mudar a cor ou editar o texto.';
 }
 function guardarPostGrafico(){gerarPostGrafico();document.getElementById('postCanvas').toBlob(blob=>{if(!blob){document.getElementById('estadoGrafico').textContent='Não foi possível preparar a imagem. Tenta novamente.';return;}const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='fengo-post-grafico.png';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);document.getElementById('estadoGrafico').textContent='Imagem preparada para guardar. Se não aparecer, verifica as transferências do navegador.';},'image/png');}
 async function partilharPostGrafico(){
